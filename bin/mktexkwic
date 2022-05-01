@@ -21,7 +21,7 @@
 #                  <subject> <text> <keyword> <text>
 #
 #   Default values for input and output file, and ll are
-#   "$saclib/doc/desc.doc", "$saclib/doc/guide/KWIC.tex", and 77, resp.
+#   "$saclib/doc/desc.doc", "$saclib/doc/user_guide/KWIC.tex", and 77, resp.
 
 if ($#argv < 1) then
   set infile=$saclib/doc/desc.doc
@@ -29,7 +29,7 @@ else
   set fname=$1
 endif
 if ($#argv < 2) then
-  set outfile=$saclib/doc/guide/KWIC.tex
+  set outfile=$saclib/doc/user_guide/KWIC.tex
 else
   set outfile=$2
 endif 
