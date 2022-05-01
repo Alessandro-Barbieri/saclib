@@ -1,7 +1,10 @@
 /*======================================================================
                       FAIL(algName,msg,...)
 
-Failure handler.
+Failure handler. 
+** REDEFINED FOR QEPCAD! QepcadB needs to, potentially, kill some child
+** processes.  That's what this adds.  A better long-term solution is to
+** change Saclib's FAIL to add an analogue to "atexit".
 
 Inputs
   algName :  the name of the algorithm which called this algorithm.
@@ -20,12 +23,13 @@ Side effects
 #ifdef __STDC__
 void FAIL(const char *algName, const char *msg,...)
 #else
-void FAIL(algName,msg) __noreturn
+void FAIL(algName,msg)
        const char *algName;
        const char *msg;
 #endif
 {
        va_list argPtr;
+       //       extern int strcmp();
 
 Step1: /* Basic message. */
        SWRITE("\n\n");
@@ -187,10 +191,16 @@ Step2: /* Failures from the SACLIB library. */
          goto Abort;
          }
 
+       /* TIMEOUT */
+       if (!strcmp(algName,"TIMEOUT")) {
+	 goto Exit;
+       }
+       
 Abort: /* Prepare for abort. */
        SWRITE("\n\nNow the FAIL handler is aborting the program ...\n");
        va_end(argPtr);
-       abort();
+       //abort();
+       exit(2);
 
 Exit:  /* Prepare for exit. */
        SWRITE("\n\nNow the FAIL handler is exiting the program ...\n");

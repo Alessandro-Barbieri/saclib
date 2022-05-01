@@ -16,14 +16,16 @@ Side effects
   occurs.
 ======================================================================*/
 #include "saclib.h"
+extern void gcw_MARK();
 
 void GCSI(s,EACSTACK)
        Word s;
        char *EACSTACK;
 {
-       Word I,L,N,N1,Np,Np1,T,T1,c,inc;
+  Word I,L,N,N1,Np,Np1,T,T1,c,/* **i,j, */inc;
        char *a;
-       /* hide I,L,N,N1,Np,Np1,T,T1,c,inc,a; */
+       GCArray *v;
+       /* hide I,L,N,N1,Np,Np1,T,T1,c,i,j,inc,a,v; */
 
 Step1: /* Setup. */
        if (GCM == 1) {
@@ -48,17 +50,8 @@ Step2: /* Mark the cells in the GCGLOBALS list. */
 	 L = I;
        }
 
-/* Step3: /\* Mark the global variables. *\/ */
-/*        L = GCGLOBALS;  */
-/*        while (L != NIL) { */
-/*          c = *(PTRFIRST(L)); */
-/* 	 if ((ISLIST(c) || ISGCA(c)) && !ISNIL(c))  MARK(c); */
-/* #if __WORDSIZE == 64 */
-/* 	 L = -RED(L); L = -RED(L); L = -RED(L); L = -RED(L);  */
-/* #else /\* Assumes 32-bit pointers. *\/ */
-/* 	 L = -RED(L); L = -RED(L);  */
-/* #endif */
-/*        } */
+Step3b: /* Mark the GCWord variables. */
+       gcw_MARK();
 
 Step4: /* Mark the cells accessible from the system stack. */
        if (((BACSTACK - EACSTACK) % s) != 0)
@@ -113,7 +106,7 @@ Step7: /* Increment counters. */
   
 Step8: /* Optional report. */
        if (GCM == 1 || N <= NU / RHO) {
-         SWRITE("** ");
+         SWRITE("\n** ");
          GWRITE(N); SWRITE(" cells, ");
          GWRITE(Np); SWRITE(" arrays in ");
          GWRITE(T); SWRITE(" milliseconds.\n");
