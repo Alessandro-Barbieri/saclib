@@ -1,0 +1,78 @@
+file(GLOB SACLIB_DOC_SOURCES
+saclib.tex
+cAN.tex
+cAsI.tex
+cAsIA.tex
+cAsMA.tex
+cAsRA.tex
+cCFC.tex
+cGCD.tex
+cI.tex
+cISAC.tex
+cLA.tex
+cLP.tex
+cNIWsCGV.tex
+cNIWsGC.tex
+cPAsDIPA.tex
+cPAsI.tex
+cPAsIPA.tex
+cPAsMPA.tex
+cPAsMR.tex
+cPAsPIO.tex
+cPAsRPA.tex
+cPF.tex
+cRRC.tex
+fLIST.tex
+fSPACE.tex
+)
+
+add_custom_command(
+	VERBATIM
+	DEPENDS ${SACLIB_DOC_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/saclib.sty
+	OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/saclib.ind
+	COMMAND latex ${CMAKE_CURRENT_SOURCE_DIR}/saclib.tex && latex ${CMAKE_CURRENT_SOURCE_DIR}/saclib.tex && makeindex ${CMAKE_CURRENT_SOURCE_DIR}/saclib.idx
+	WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+)
+
+add_custom_command(
+	VERBATIM
+	DEPENDS ${SACLIB_DOC_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/saclib.sty ${CMAKE_CURRENT_SOURCE_DIR}/saclib.ind
+	OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/saclib.dvi
+	COMMAND latex ${CMAKE_CURRENT_SOURCE_DIR}/saclib.tex && latex ${CMAKE_CURRENT_SOURCE_DIR}/saclib.tex
+	WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+)
+
+add_custom_command(
+	VERBATIM
+	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/saclocal.tex ${CMAKE_CURRENT_SOURCE_DIR}/saclib.sty
+	OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/saclocal.dvi
+	COMMAND latex ${CMAKE_CURRENT_SOURCE_DIR}/saclocal.tex && latex ${CMAKE_CURRENT_SOURCE_DIR}/saclocal.tex
+	WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+)
+
+add_custom_command(
+	VERBATIM
+	OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/KWIC.tex
+	COMMAND ${CMAKE_COMMAND} -E env "saclib=${CMAKE_SOURCE_DIR}" ${CMAKE_SOURCE_DIR}/bin/mktexkwic
+	WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+)
+
+add_custom_command(
+	VERBATIM
+	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/sackwic.tex ${CMAKE_CURRENT_SOURCE_DIR}/KWIC.tex ${CMAKE_CURRENT_SOURCE_DIR}/saclib.sty
+	OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/sackwic.dvi
+	COMMAND latex ${CMAKE_CURRENT_SOURCE_DIR}/sackwic.tex
+	WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+)
+
+add_custom_target(docs
+	ALL
+	DEPENDS
+	"${CMAKE_CURRENT_SOURCE_DIR}/saclib.dvi"
+	"${CMAKE_CURRENT_SOURCE_DIR}/saclocal.dvi"
+	"${CMAKE_CURRENT_SOURCE_DIR}/sackwic.dvi"
+)
+
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/saclib.dvi" DESTINATION "${CMAKE_INSTALL_DOCDIR}")
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/saclocal.dvi" DESTINATION "${CMAKE_INSTALL_DOCDIR}")
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/sackwic.dvi" DESTINATION "${CMAKE_INSTALL_DOCDIR}")
